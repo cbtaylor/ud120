@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from prep_terrain_data import makeTerrainData
 from class_vis import prettyPicture
 from sklearn import neighbors
+from sklearn.metrics import classification_report
 from time import time
 
 features_train, labels_train, features_test, labels_test = makeTerrainData()
@@ -58,7 +59,7 @@ for n_neighbors in [1,2,3,4,5,7,9,11,13,15,17,19,21,23,25,35,50]:
         print "Accuracy:", accuracy
         print
         
-        from sklearn.metrics import classification_report
+        
         target_names = ['fast', 'slow']
         print(classification_report(labels_test, pred, target_names=target_names))
 

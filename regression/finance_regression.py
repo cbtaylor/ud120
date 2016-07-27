@@ -18,7 +18,7 @@ import pickle
 sys.path.append("../tools/")
 from feature_format import featureFormat, targetFeatureSplit
 dictionary = pickle.load( open("../final_project/final_project_dataset_modified.pkl", "r") )
-
+#print dictionary['METTS MARK'].keys()
 ### list the features you want to look at--first item in the 
 ### list will be the "target" feature
 features_list = ["bonus", "salary"]
@@ -29,7 +29,7 @@ target, features = targetFeatureSplit( data )
 from sklearn.cross_validation import train_test_split
 feature_train, feature_test, target_train, target_test = train_test_split(features, target, test_size=0.5, random_state=42)
 train_color = "b"
-test_color = "b"
+test_color = "r"
 
 
 
@@ -38,10 +38,20 @@ test_color = "b"
 ### plots it correctly. Don't forget to change the test_color above from "b" to
 ### "r" to differentiate training points from test points.
 
+### import the sklearn regression module, create, and train your regression
+from sklearn import linear_model
 
+### name your regression reg
+reg = linear_model.LinearRegression()
 
+### fit the model
+reg.fit(feature_train, target_train)
 
-
+print "predict for 27:", reg.predict([[27]])
+print "slope:", reg.coef_
+print "intercept:", reg.intercept_
+print "R-squared on test data:", reg.score(feature_test, target_test)
+print "R-squared on train data:", reg.score(feature_train, target_train)
 
 
 
@@ -61,9 +71,14 @@ plt.scatter(feature_test[0], target_test[0], color=train_color, label="train")
 
 ### draw the regression line, once it's coded
 try:
-    plt.plot( feature_test, reg.predict(feature_test) )
+    plt.plot( feature_test, reg.predict(feature_test), color="r")
 except NameError:
     pass
+
+reg.fit(feature_test, target_test)
+print "slope:", reg.coef_
+plt.plot(feature_train, reg.predict(feature_train), color="b") 
+
 plt.xlabel(features_list[1])
 plt.ylabel(features_list[0])
 plt.legend()
