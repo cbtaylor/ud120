@@ -40,7 +40,7 @@ data_dict.pop("TOTAL", 0)
 emin = 10000000
 emax = 0
 for key in data_dict.keys():
-    eso = data_dict[key]['salary']
+    eso = data_dict[key]['exercised_stock_options']
     if eso != 'NaN':    
         
         if eso < emin:
