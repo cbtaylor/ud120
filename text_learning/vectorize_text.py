@@ -56,12 +56,14 @@ for name, from_person in [("sara", from_sara), ("chris", from_chris)]:
             parsed_text = parsed_text.replace("shackleton", "").strip()
             parsed_text = parsed_text.replace("chris", "").strip()
             parsed_text = parsed_text.replace("germani", "").strip()
+            parsed_text = parsed_text.replace("sshacklensf", "").strip()
+            parsed_text = parsed_text.replace("cgermannsf", "").strip()
             
             ### append the text to word_data
             word_data.append(parsed_text)
             
             ### append a 0 to from_data if email is from Sara, and 1 if email is from Chris
-            if from_person == "sara":
+            if name == "sara":
                 from_data.append(0)
             else:
                 from_data.append(1)
@@ -77,14 +79,14 @@ word_tfidf = vectorizer.fit_transform(word_data)
 feature_names = vectorizer.get_feature_names()
 
 print "# of features:", len(feature_names)
-print feature_names[34597]
+print feature_names[34]
 
 
 print "emails processed"
 from_sara.close()
 from_chris.close()
 
-print word_data[152]
+
 
 pickle.dump( word_data, open("your_word_data.pkl", "w") )
 pickle.dump( from_data, open("your_email_authors.pkl", "w") )
