@@ -3,47 +3,57 @@
 import sys
 import pickle
 sys.path.append("../tools/")
-import pprint
+
 import pandas as pd
-import ggplot as gg
-from ggplot import aes
-import matplotlib.pyplot as plt
-import numpy as np
+
 from data_prep import data_prep
 
-labels, features = data_prep()
+y, X = data_prep()
 
-print type(labels)
-print type(features)
+print "labels:", y.shape
+print "features:", X.shape
 
-"""
-p = gg.ggplot(aes(x='salary', y='bonus', color='poi'), data = df) + \
-    gg.geom_point() + \
-    gg.scale_x_continuous(limits = [0,1200000]) + \
-    gg.scale_y_continuous(limits = [0,8500000]) + \
-    gg.geom_smooth(method='lm') 
-print p
-
-q = gg.ggplot(aes(x='salary', y='long_term_incentive', color='poi'), data = df) + \
-    gg.geom_point() + \
-    gg.scale_x_continuous(limits = [0,1200000]) + \
-    gg.scale_y_continuous(limits = [0,5200000]) + \
-    gg.geom_smooth(method='lm') 
-print q
-
-r = gg.ggplot(aes(x='total_stock_value', y='exercised_stock_options', \
-    color='poi'), data = df) + \
-    gg.geom_point() + \
-    gg.scale_x_log10() + \
-    gg.scale_y_log10() + \
-    gg.xlim(100000,50000000)
-print r
-"""
-
-from sklearn import datasets
-iris = datasets.load_iris()
 from sklearn.naive_bayes import GaussianNB
+from sklearn.cross_validation import StratifiedKFold
+from sklearn.metrics import classification_report
+from sklearn.metrics import precision_score
+from sklearn.metrics import recall_score
+from sklearn.metrics import confusion_matrix
+
 gnb = GaussianNB()
-y_pred = gnb.fit(features, labels).predict(features)
-print("Number of mislabeled points out of a total %d points : %d"
-      % (features.shape[0],(labels != y_pred).sum()))
+num_folds = 4
+kf = StratifiedKFold(y, n_folds = num_folds, 
+                     shuffle = True, random_state = 19)
+agg_cm = ([[0,0],[0,0]])
+
+for train_indices, valid_indices in kf:
+    X_train, y_train = X.iloc[train_indices], y[train_indices]
+    X_valid, y_valid = X.iloc[valid_indices], y[valid_indices]
+    
+    y_pred = gnb.fit(X_train, y_train).predict(X_valid)
+    
+    target_names = ['not a poi', 'poi']
+    print(classification_report(y_valid, y_pred, target_names=target_names))
+    
+    cm = confusion_matrix(y_valid, y_pred, labels = [False, True])
+    agg_cm += cm
+    print "Aggregate confusion matrix:\n", agg_cm
+    
+true_neg = agg_cm[0][0]
+false_pos = agg_cm[0][1]
+false_neg = agg_cm[1][0]
+true_pos = agg_cm[1][1]
+
+precision = float(true_pos) / (true_pos + false_pos)
+recall = float(true_pos) / (true_pos + false_neg)
+f1 = 2 * precision * recall / (precision + recall)
+
+print
+print " true positives:", true_pos
+print " true negatives:", true_neg
+print "false positives:", false_pos
+print "false negatives:", false_neg
+print
+print "precision:", precision
+print "   recall:", recall
+print " F1 score:", f1

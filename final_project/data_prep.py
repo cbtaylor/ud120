@@ -48,6 +48,9 @@ def data_prep():
     
     df['total_stock_value'] = \
         pd.to_numeric(df.total_stock_value, errors='coerce')
+        
+    df['total_payments'] = \
+        pd.to_numeric(df.total_payments, errors='coerce')
     
     df['expenses'] = \
         pd.to_numeric(df.expenses, errors='coerce')
@@ -106,6 +109,31 @@ def data_prep():
     df['restricted_stock_combined'] = \
         df.restricted_stock + df.restricted_stock_deferred
     df = df.drop(['restricted_stock', 'restricted_stock_deferred'], axis=1)
+    
+    # sci-kit learn can't deal with NaN values
+    # so they have be replaced with something reasonable
+    # or the rows of data must be dropped
+    # I chose to go with the former strategy
+    
+    # it was difficult to decide what value to replace NaN with
+    # obviously everyone has a salary, but I don't think everyone
+    # naturally has a value for 'other'. I made some arbitrary choices
+    
+    df['salary'] = df.salary.fillna(df.salary.median())
+    df['bonus'] = df.bonus.fillna(df.bonus.median())
+    df['expenses'] = df.expenses.fillna(df.expenses.median())
+    df['to_messages'] = df.to_messages.fillna(df.to_messages.median())
+    df['from_messages'] = df.from_messages.fillna(df.from_messages.median())
+    df['total_payments'] = df.total_payments.fillna(df.total_payments.median())
+    
+    df['exercised_stock_options'] = df.exercised_stock_options.fillna(0)
+    df['other'] = df.other.fillna(0)
+    df['long_term_incentive'] = df.long_term_incentive.fillna(0)
+    df['restricted_stock_combined'] = df.restricted_stock_combined.fillna(0)
+    df['total_stock_value'] = df.total_stock_value.fillna(0)
+    df['deferred_income'] = df.deferred_income.fillna(0)
+    
+    
     
     labels = df.poi
     features = df.drop('poi', axis=1)
