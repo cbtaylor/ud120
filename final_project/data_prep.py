@@ -133,6 +133,12 @@ def data_prep():
     df['total_stock_value'] = df.total_stock_value.fillna(0)
     df['deferred_income'] = df.deferred_income.fillna(0)
     
+    # select k best doesn't like negativative values
+    # deferred_income is either negative or zero
+    df['deferred_income'] = abs(df.deferred_income)
+    # total_stock_value contained one negative, which was probably
+    # a mistake
+    df['total_stock_value'] = abs(df.total_stock_value)
     
     
     labels = df.poi
