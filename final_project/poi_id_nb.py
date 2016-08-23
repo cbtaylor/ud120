@@ -30,7 +30,7 @@ print "after select k best:", X_new.shape
 
 
 gnb = GaussianNB()
-num_folds = 4
+num_folds = 3
 kf = StratifiedKFold(y, n_folds = num_folds, 
                      shuffle = True, random_state = 19)
 agg_cm = ([[0,0],[0,0]])
@@ -48,23 +48,33 @@ for train_indices, valid_indices in kf:
     print cm
     agg_cm += cm
 
-print "Aggregate confusion matrix:\n", agg_cm
+print "\nAggregate confusion matrix:\n", agg_cm
     
-true_neg = agg_cm[0][0]
-false_pos = agg_cm[0][1]
-false_neg = agg_cm[1][0]
-true_pos = agg_cm[1][1]
+TN = agg_cm[0][0]
+FP = agg_cm[0][1]
+FN = agg_cm[1][0]
+TP = agg_cm[1][1]
 
-precision = float(true_pos) / (true_pos + false_pos)
-recall = float(true_pos) / (true_pos + false_neg)
-f1 = 2 * precision * recall / (precision + recall)
+try:
+    precision = float(TP) / (TP + FP)
+    recall = float(TP) / (TP + FN)
+    f1 = 2 * precision * recall / (precision + recall)
+    mcc = (TP * TN - FP * FN) / \
+          ((TP + FP) * (TP + FN) * (TN + FP) * (TN + FN)) ** 0.5 
 
-print
-print " true positives:", true_pos
-print " true negatives:", true_neg
-print "false positives:", false_pos
-print "false negatives:", false_neg
-print
-print "precision:", precision
-print "   recall:", recall
-print " F1 score:", f1
+    print
+    print " true positives:", TP
+    print " true negatives:", TN
+    print "false positives:", FP
+    print "false negatives:", FN
+    print
+    print "precision:", precision
+    print "   recall:", recall
+    print " F1 score:", f1
+    print "      MCC:", mcc
+
+
+except:
+    print
+    print "Scores can't be calculated probably \n\
+           because there are no positive predictions"

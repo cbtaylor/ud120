@@ -35,7 +35,7 @@ knn = KNeighborsClassifier(n_neighbors=4, weights='distance',
                            metric='minkowski', metric_params=None, n_jobs=1)
 
           
-num_folds = 3
+num_folds = 4
 kf = StratifiedKFold(y, n_folds = num_folds, 
                      shuffle = True, random_state = 19)
 agg_cm = ([[0,0],[0,0]])
@@ -68,7 +68,7 @@ try:
     f1 = 2 * precision * recall / (precision + recall)
     mcc = (TP * TN - FP * FN) / \
           ((TP + FP) * (TP + FN) * (TN + FP) * (TN + FN)) ** 0.5 
-    
+
     print
     print " true positives:", TP
     print " true negatives:", TN
@@ -80,6 +80,8 @@ try:
     print " F1 score:", f1
     print "      MCC:", mcc
 
+
 except:
     print
-    print "Scores can't be calculated because there are no positive predictions"
+    print "Scores can't be calculated probably \n\
+           because there are no positive predictions"

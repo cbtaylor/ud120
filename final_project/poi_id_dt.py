@@ -86,10 +86,11 @@ try:
     print "   recall:", recall
     print " F1 score:", f1
     print "      MCC:", mcc
+    print
+    print "feature importances:", dtc.feature_importances_
 
 except:
     print
     print "Scores can't be calculated probably \n\
            because there are no positive predictions"
-    
 
